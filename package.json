@@ -15,10 +15,14 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dlx": "^0.2.1",
+    "localforage": "^1.10.0",
     "lucide-react": "^0.511.0",
+    "match-sorter": "^8.0.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.1",
     "shadcn-ui": "^0.9.5",
+    "sort-by": "^1.2.0",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
@@ -29,6 +33,7 @@
     "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.21",
     "eslint": "^8.57.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^16.0.0",
     "postcss": "^8.5.4",
     "prettier-plugin-tailwindcss": "^0.6.11",

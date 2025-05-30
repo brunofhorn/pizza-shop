@@ -1,11 +1,10 @@
-import "@/globals.css"
+import "@/globals.css";
+import { Button } from "./components/ui/button";
 
 export function App() {
   return (
-    <>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="flex justify-center items-center h-screen">
+      <Button>Enviar</Button>
+    </div>
+  );
 }

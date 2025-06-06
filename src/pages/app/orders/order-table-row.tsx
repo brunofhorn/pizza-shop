@@ -8,6 +8,9 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 
 import { OrderDetails } from './order-details'
+import { cancelOrder } from '@/api/cancel-order'
+import { queryClient } from '@/lib/react-query'
+import type { GetOrderDetailsResponse } from '@/api/get-order-details'
 export interface OrderTableRowProps {
   order: {
     orderId: string
@@ -19,50 +22,81 @@ export interface OrderTableRowProps {
 }
 
 export function OrderTableRow({ order }: OrderTableRowProps) {
-  return (
-    <TableRow>
-      <TableCell>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" size="xs">
-              <Search className="h-3 w-3" />
-              <span className="sr-only">Detalhes do pedido</span>
-            </Button>
-          </DialogTrigger>
-          <OrderDetails />
-        </Dialog>
-      </TableCell>
-      <TableCell className="font-mono text-xs font-medium">
-        {order.orderId}
-      </TableCell>
-      <TableCell className="text-muted-foreground">
-        {formatDistanceToNow(order.createdAt, {
-          locale: ptBR,
-          addSuffix: true,
-        })}
-      </TableCell>
-      <TableCell>
-        <OrderStatus status={order.status} />
-      </TableCell>
-      <TableCell className="font-medium">{order.customerName}</TableCell>
-      <TableCell className="font-medium">
-        {order.total.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        })}
-      </TableCell>
-      <TableCell>
-        <Button variant="outline" size="xs">
-          <ArrowRight className="mr-2 h-3 w-3" />
-          Aprovar
-        </Button>
-      </TableCell>
-      <TableCell>
-        <Button variant="ghost" size="xs">
-          <X className="mr-2 h-3 w-3" />
-          Cancelar
-        </Button>
-      </TableCell>
-    </TableRow>
-  )
+  const [isDetailsOpen, setDetailsOpen] = useState(false)
+  const queryClient = useQueryClient()
+
+  const { mutationAsync: cancelOrderFn } = useMutation({
+    mutationFn: cancelOrder,
+    async onSuccess(_, { orderId })
+      const ordersListCache = queryClient.getQueriesData<GetOrderResponse>({
+      queryKey: ['orders'],
+    })
+
+      ordersListCache.forEach(([cacheKey, cacheData]) => {
+      if (!cacheData) {
+        return
+      }
+
+      queryClient.setQueryData<GetOrderResponse>(cacheKey, {
+        ...cacheData,
+        orders: cacheData.orders.map(order => {
+          if (order.orderId === orderId) {
+            return {
+              ...order,
+              status: 'canceled',
+            }
+          }
+          return order
+        }),
+      })
+    })
+  },
+  })
+
+return (
+  <TableRow>
+    <TableCell>
+      <Dialog open={isDetailsOpen} onOpenChange={setDetailsOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="xs">
+            <Search className="h-3 w-3" />
+            <span className="sr-only">Detalhes do pedido</span>
+          </Button>
+        </DialogTrigger>
+        <OrderDetails orderId={order.orderId} open={isDetailsOpen} />
+      </Dialog>
+    </TableCell>
+    <TableCell className="font-mono text-xs font-medium">
+      {order.orderId}
+    </TableCell>
+    <TableCell className="text-muted-foreground">
+      {formatDistanceToNow(order.createdAt, {
+        locale: ptBR,
+        addSuffix: true,
+      })}
+    </TableCell>
+    <TableCell>
+      <OrderStatus status={order.status} />
+    </TableCell>
+    <TableCell className="font-medium">{order.customerName}</TableCell>
+    <TableCell className="font-medium">
+      {(order.total / 100).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      })}
+    </TableCell>
+    <TableCell>
+      <Button variant="outline" size="xs">
+        <ArrowRight className="mr-2 h-3 w-3" />
+        Aprovar
+      </Button>
+    </TableCell>
+    <TableCell>
+      <Button onClick={() => cancelOrderFn({ orderId: order.orderId })} variant="ghost" size="xs" disabled={['pending', 'processing'].includes(order.status)}>
+        <X className="mr-2 h-3 w-3" />
+        Cancelar
+      </Button>
+    </TableCell>
+  </TableRow>
+)
 }

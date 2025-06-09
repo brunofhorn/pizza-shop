@@ -1,4 +1,4 @@
-import '@/globals.css'
+import './globals.css'
 
 import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider } from 'react-router-dom'
